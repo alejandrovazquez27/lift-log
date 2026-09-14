@@ -10,3 +10,7 @@ def push():
 @app.route('/pull')
 def pull():
     return render_template('pull.html')
+@app.route('/legs')
+def legs():
+    return render_template('legs.html')
+
