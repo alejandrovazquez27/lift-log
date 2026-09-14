@@ -7,4 +7,6 @@ def home():
 @app.route('/push')
 def push():
     return render_template('push.html')
-
+@app.route('/pull')
+def pull():
+    return render_template('pull.html')
