@@ -9,6 +9,11 @@
   <body>
     <main>
       <h1> Push Workout</h1>
+      <ul>
+        {% for exercise in exercises %}
+          <li>{{ exercise }}</li>
+        {% endfor %}
+      </ul>
       <p>Track your chest, shoulders, and triceps workouts.</p>
       <a href="{{ url_for('home') }}">Back to home</a>
     </main>
