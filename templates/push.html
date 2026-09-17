@@ -14,6 +14,19 @@
           <li>{{ exercise }}</li>
         {% endfor %}
       </ul>
+      <form action="{{ url_for('add_push_exercise') }}" method="post">
+        <label for="exercise-name">Exercise name</label>
+
+        <input
+          type="text"
+          id="exercise-name"
+          name="exercise_name"
+          placeholder="Example: Cable Fly"
+          required
+          >
+
+        <button type="submit">Add exercise</button>
+      </form>
       <p>Track your chest, shoulders, and triceps workouts.</p>
       <a href="{{ url_for('home') }}">Back to home</a>
     </main>
