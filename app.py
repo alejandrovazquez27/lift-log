@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
+from database import get_connection
+
 
 app = Flask(__name__)
 push_exercises = [
@@ -18,7 +20,7 @@ leg_exercises = [
     "Leg Press",
     "Quad Extensions",
     "Hamstring Curls",
-    "Calf Raises"
+    "Calf Raises",
     "Ab crunches"
 ]
 @app.route('/')
@@ -29,38 +31,74 @@ def home():
 
 @app.route('/push')
 def push():
-    return render_template('push.html', exercises=push_exercises)
+    connection = get_connection()
+    exercises = connection.execute("SELECT * FROM exercises WHERE split = ? ORDER BY name", ("push",)).fetchall()
+    connection.close()
+    return render_template('push.html', exercises=exercises)
 
 
 @app.route("/push/exercises", methods=["POST"])
 def add_push_exercise():
     exercise_name = request.form.get("exercise_name", "").strip()
     if exercise_name:
-        push_exercises.append(exercise_name)
+        connection = get_connection()
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO exercises (name, split)
+            VALUES (?, ?)
+            """,
+            (exercise_name, "push")
+        )
+        connection.commit()
+        connection.close()
     return redirect(url_for("push"))
 
 
 @app.route('/pull')
 def pull():
-    return render_template('pull.html', exercises=pull_exercises)
+    connection = get_connection()
+    exercises = connection.execute("SELECT * FROM exercises WHERE split = ? ORDER BY name", ("pull",)).fetchall()
+    connection.close()
+    return render_template('pull.html', exercises=exercises)
 
 @app.route("/pull/exercises", methods=["POST"])
 def add_pull_exercise():
     exercise_name = request.form.get("exercise_name", "").strip()
     if exercise_name:
-        pull_exercises.append(exercise_name)
+        connection = get_connection()
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO exercises (name, split)
+            VALUES (?, ?)
+            """,
+            (exercise_name, "pull")
+        )
+        connection.commit()
+        connection.close()
     return redirect(url_for("pull"))
 
 
 @app.route('/legs')
 def legs():
-    return render_template('legs.html', exercises=leg_exercises)
+    connection = get_connection()
+    exercises = connection.execute("SELECT * FROM exercises WHERE split = ? ORDER BY name", ("legs",)).fetchall()
+    connection.close()
+    return render_template('legs.html', exercises=exercises)
 
 @app.route('/legs/exercises', methods=["POST"])
 def add_leg_exercise():
     exercise_name = request.form.get("exercise_name", "").strip()
     if exercise_name:
-        leg_exercises.append(exercise_name)
+        connection = get_connection()
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO exercises (name, split)
+            VALUES (?, ?)
+            """,
+            (exercise_name, "legs")
+        )
+        connection.commit()
+        connection.close()
     return redirect(url_for("legs"))
     
 
