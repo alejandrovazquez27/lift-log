@@ -11,7 +11,9 @@
       <h1> Push Workout</h1>
       <ul>
         {% for exercise in exercises %}
-          <li>{{ exercise }}</li>
+          <li>{{ exercise["name"] }}</li>
+        {% else %}
+          <li>No exercises added yet.</li>
         {% endfor %}
       </ul>
       <form action="{{ url_for('add_push_exercise') }}" method="post">
