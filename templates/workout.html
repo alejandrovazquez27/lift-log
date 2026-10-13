@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout | Lift Log</title>
+  </head>
+
+  <body>
+    <main>
+      <h1>{{ session["split"] | title }} Workout</h1>
+      <form action="{{ url_for('add_set', session_id=session['id']) }}" method="POST">
+        <label for="exercise-id">Exercise</label>
+          <select name="exercise_id" id="exercise-id" required>
+            {% for exercise in exercises%}
+              <option value="{{ exercise['id'] }}">{{ exercise['name'] }}</option>
+            {% endfor %}
+          </select>
+        <label for="set-number">Set</label>
+          <select name="set_number" id="set-number" required>
+            {% for i in range(1, 11) %}
+              <option value="{{ i }}">{{ i }}</option>
+            {% endfor %}
+          </select>
+        <label for="reps">Reps</label>
+          <input type="number" id="reps" name="reps" min="1" required>
+        <label for="weight">Weight</label>
+          <label for="weight">Weight</label>
+            <input type="number" id="weight" name="weight" min="0" step="0.5" required>
+          <button type="submit">Add set</button>
+        </form>
+      <p>Date: {{ session["workout_date"] }}</p>
+
+      {% for exercise in exercises %}
+        <section>
+          <h2>{{ exercise["name"] }}</h2>
+          <p></p>
+        </section>
+      {% else %}
+        <p>No exercises have been added to this split.</p>
+      {% endfor %}
+
+      <a href="{{ url_for('home') }}">Back to home</a>
+    </main>
+  </body>
+</html>

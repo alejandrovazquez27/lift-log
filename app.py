@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, abort
 from database import get_connection
 
 
@@ -101,4 +101,74 @@ def add_leg_exercise():
         connection.close()
     return redirect(url_for("legs"))
     
+@app.route('/workouts/start/<split>', methods=['POST'])
+def start_workout(split):
+    valid_splits = ['push', 'pull', 'legs']
+    
+    if split not in valid_splits:
+        abort(400)
+    
+    connection = get_connection()
+    cursor = connection.execute(
+    """
+        INSERT INTO workout_sessions (split)
+        VALUES (?)
+    """,
+        (split,)
+    )
+    session_id = cursor.lastrowid
+    connection.commit()
+    connection.close()
+    return redirect(url_for('view_workout', session_id=session_id))
 
+@app.route("/workouts/<int:session_id>")
+def view_workout(session_id):
+    connection = get_connection()
+
+    session = connection.execute(
+        """
+        SELECT * FROM workout_sessions
+        WHERE id = ?
+        """,
+        (session_id,)
+    ).fetchone()
+
+    if session is None:
+        connection.close()
+        abort(404)
+
+    exercises = connection.execute(
+        """
+        SELECT * FROM exercises
+        WHERE split = ?
+        ORDER BY name
+        """,
+        (session["split"],)
+    ).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "workout.html",
+        session=session,
+        exercises=exercises
+    )
+@app.route("/workouts/<int:session_id>/add_set", methods=["POST"])
+def add_set(session_id):
+    exercise_id = request.form.get("exercise_id")
+    set_number = request.form.get("set_number")
+    reps = request.form.get("reps")
+    weight = request.form.get("weight")
+
+    connection = get_connection()
+    connection.execute(
+        """
+        INSERT INTO workout_sets (session_id, exercise_id, set_number, reps, weight)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (session_id, exercise_id, set_number, reps, weight)
+    )
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("view_workout", session_id=session_id))
