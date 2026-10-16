@@ -145,13 +145,23 @@ def view_workout(session_id):
         """,
         (session["split"],)
     ).fetchall()
-
+    logged_sets = connection.execute(
+    """
+        SELECT ws.id, ws.set_number, ws.reps, ws.weight, e.name AS exercise_name
+        FROM workout_sets ws
+        JOIN exercises e ON ws.exercise_id = e.id
+        WHERE ws.session_id = ?
+        ORDER BY e.name,ws.set_number
+    """,
+    (session_id,)
+).fetchall()
     connection.close()
 
     return render_template(
         "workout.html",
         session=session,
-        exercises=exercises
+        exercises=exercises,
+        logged_sets=logged_sets
     )
 @app.route("/workouts/<int:session_id>/add_set", methods=["POST"])
 def add_set(session_id):
