@@ -193,3 +193,4 @@ def add_set(session_id):
     connection.close()
 
     return redirect(url_for("view_workout", session_id=session_id))
+#need to add a route to delete a set
