@@ -16,12 +16,6 @@
               <option value="{{ exercise['id'] }}">{{ exercise['name'] }}</option>
             {% endfor %}
           </select>
-        <label for="set-number">Set</label>
-          <select name="set_number" id="set-number" required>
-            {% for i in range(1, 11) %}
-              <option value="{{ i }}">{{ i }}</option>
-            {% endfor %}
-          </select>
         <label for="reps">Reps:</label>
           <input type="number" id="reps" name="reps" min="1" required>
           <label for="weight">Weight:</label>

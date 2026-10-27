@@ -166,11 +166,22 @@ def view_workout(session_id):
 @app.route("/workouts/<int:session_id>/add_set", methods=["POST"])
 def add_set(session_id):
     exercise_id = request.form.get("exercise_id")
-    set_number = request.form.get("set_number")
     reps = request.form.get("reps")
     weight = request.form.get("weight")
 
     connection = get_connection()
+    
+    next_set = connection.execute(
+        """
+        SELECT COALESCE(MAX(set_number), 0) + 1 AS next_number
+        FROM workout_sets
+        WHERE session_id = ? AND exercise_id = ?
+  """,
+        (session_id, exercise_id)
+    ).fetchone()
+    
+    set_number = next_set["next_number"]
+    
     connection.execute(
         """
         INSERT INTO workout_sets (session_id, exercise_id, set_number, reps, weight)
