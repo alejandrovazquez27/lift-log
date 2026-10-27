@@ -123,6 +123,7 @@ def start_workout(split):
 
 @app.route("/workouts/<int:session_id>")
 def view_workout(session_id):
+    selected_exercise_id = request.args.get("exercise_id", type=int)
     connection = get_connection()
 
     session = connection.execute(
@@ -161,7 +162,8 @@ def view_workout(session_id):
         "workout.html",
         session=session,
         exercises=exercises,
-        logged_sets=logged_sets
+        logged_sets=logged_sets,
+        selected_exercise_id=selected_exercise_id
     )
 @app.route("/workouts/<int:session_id>/add_set", methods=["POST"])
 def add_set(session_id):
@@ -192,5 +194,5 @@ def add_set(session_id):
     connection.commit()
     connection.close()
 
-    return redirect(url_for("view_workout", session_id=session_id))
+    return redirect(url_for("view_workout", session_id=session_id, exercise_id=exercise_id))
 #need to add a route to delete a set

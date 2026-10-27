@@ -13,7 +13,8 @@
         <label for="exercise-id">Exercise:</label>
           <select name="exercise_id" id="exercise-id" required>
             {% for exercise in exercises%}
-              <option value="{{ exercise['id'] }}">{{ exercise['name'] }}</option>
+              <option value="{{ exercise['id'] }}" {% if exercise['id'] == selected_exercise_id %}
+              selected{% endif %}>{{ exercise['name'] }}</option>
             {% endfor %}
           </select>
         <label for="reps">Reps:</label>
